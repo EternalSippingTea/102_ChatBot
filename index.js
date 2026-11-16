@@ -39,7 +39,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'nvidia/llama-nemotron-rerank-vl-1b-v2:free',
+                model: 'respan/span-01-lite:free',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
