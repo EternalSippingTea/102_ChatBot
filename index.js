@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const model = process.env.OPENROUTER_MODEL || 'inclusionai/ling-3.2-flash:free';
+const model = process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-lightning:free';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
