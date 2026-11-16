@@ -39,7 +39,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'inclusional/ling-3.2-flash:free',
+                model: 'meta-llama/llama-3.1-8b-instruct:free',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
