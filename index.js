@@ -135,3 +135,6 @@ app.post('/api/chat', async (req, res) => {
 }
 });
 
+app.listen(port, () => {
+    console.log(`Server berjalan di http://localhost:${port}`);
+});
