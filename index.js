@@ -32,14 +32,14 @@ app.post('/api/chat', async (req, res) => {
             });
         }
 
-        const response = await fetch('https://api.openrouter.ai/v1/chat/completions', {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'google/gemini-2.5-flash',
+                model: 'google/gemma-4-26b-a4b-it:free',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
