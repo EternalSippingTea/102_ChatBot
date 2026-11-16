@@ -39,7 +39,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'meta-llama/llama-3.1-8b-instruct:free',
+                model: 'perplexity/pplx-decider-v1.3:free',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
