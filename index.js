@@ -39,7 +39,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'perplexity/pplx-decider-v1.3:free',
+                model: 'google/gemini-2.5-flash',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
