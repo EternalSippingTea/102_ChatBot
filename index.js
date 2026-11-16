@@ -39,7 +39,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'cohere/north-mini-code:free',
+                model: 'inclusionai/ling-3.2-flash:free',
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
