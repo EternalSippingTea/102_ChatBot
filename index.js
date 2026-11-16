@@ -6,6 +6,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+const model = process.env.OPENROUTER_MODEL || 'inclusionai/ling-3.2-flash:free';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
                 Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'inclusionai/ling-3.2-flash:free',
+                model,
                 messages,
                 temperature: 0.7,
                 max_tokens: 1000,
@@ -70,40 +71,49 @@ app.post('/api/chat', async (req, res) => {
         const decoder = new TextDecoder();
         let buffer = '';
 
+        const processChunk = (chunk) => {
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (!trimmedLine || !trimmedLine.startsWith('data:')) {
+                    continue;
+                }
+
+                const data = trimmedLine.slice(5).trim();
+                if (data === '[DONE]') {
+                    continue;
+                }
+
+                try {
+                    const json = JSON.parse(data);
+                    const content = json?.choices?.[0]?.delta?.content;
+                    if (typeof content === 'string' && content) {
+                        res.write(`data: ${JSON.stringify(content)}\n\n`);
+                    }
+                } catch (error) {
+                    console.error('Gagal parsing streaming data:', error);
+                }
+            }
+        };
+
         while (true) {
             const { done, value } = await reader.read();
             if (done) {
                 break;
             }
 
-            buffer += decoder.decode(value, { stream: true });
+            buffer = (buffer + decoder.decode(value, { stream: true })).replace(/\r\n/g, '\n');
             const chunks = buffer.split('\n\n');
             buffer = chunks.pop() || '';
 
             for (const chunk of chunks) {
-                const lines = chunk.split('\n');
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine || !trimmedLine.startsWith('data:')) {
-                        continue;
-                    }
-
-                    const data = trimmedLine.slice(5).trim();
-                    if (data === '[DONE]') {
-                        continue;
-                    }
-
-                    try {
-                        const json = JSON.parse(data);
-                        const content = json?.choices?.[0]?.delta?.content;
-                        if (typeof content === 'string' && content) {
-                            res.write(`data: ${JSON.stringify(content)}\n\n`);
-                        }
-                    } catch (error) {
-                        console.error('Gagal parsing streaming data:', error);
-                    }
-                }
+                processChunk(chunk);
             }
+        }
+
+        buffer = (buffer + decoder.decode()).replace(/\r\n/g, '\n');
+        if (buffer.trim()) {
+            processChunk(buffer);
         }
 
         res.write('data: [DONE]\n\n');

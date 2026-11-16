@@ -87,7 +87,9 @@ chatForm.addEventListener("submit", async (event) => {
 
                     try {
                         const json = JSON.parse(data);
-                        const token = json?.choices?.[0]?.delta?.content;
+                        const token = typeof json === "string"
+                            ? json
+                            : json?.choices?.[0]?.delta?.content;
 
                         if (typeof token === "string") {
                             botResponse += token;
